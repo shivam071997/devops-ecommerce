@@ -1,11 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_USER = 'shivam0708'
+        BACKEND_IMAGE = 'shivam0708/ecommerce-backend'
+        FRONTEND_IMAGE = 'shivam0708/ecommerce-frontend'
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out E-Commerce DevOps project'
                 checkout scm
             }
         }
@@ -20,19 +25,30 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                sh 'docker build -t ecommerce-backend:jenkins ./backend'
+                sh 'docker build -t ${BACKEND_IMAGE}:${BUILD_NUMBER} ./backend'
             }
         }
 
         stage('Build Frontend') {
             steps {
-                sh 'docker build -t ecommerce-frontend:jenkins ./frontend'
+                sh 'docker build -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} ./frontend'
             }
         }
 
-        stage('Verify Images') {
+        stage('Push to Docker Hub') {
             steps {
-                sh 'docker images | grep ecommerce-'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_TOKEN'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${BACKEND_IMAGE}:${BUILD_NUMBER}
+                        docker push ${FRONTEND_IMAGE}:${BUILD_NUMBER}
+                        docker logout
+                    '''
+                }
             }
         }
     }
