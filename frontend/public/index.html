@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Analytics</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+        }
+
+        header {
+            background: #222;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .product {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        #status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>E-Commerce Analytics Platform</h1>
+    <p>DevOps Practice Project</p>
+</header>
+
+<div class="container">
+
+    <div class="cards">
+
+        <div class="card">
+            <h2>API Status</h2>
+            <p id="status">Checking...</p>
+        </div>
+
+        <div class="card">
+            <h2>Total Revenue</h2>
+            <p id="revenue">Loading...</p>
+        </div>
+
+    </div>
+
+    <h2>Products</h2>
+
+    <div id="products">
+        Loading products...
+    </div>
+
+</div>
+
+<script>
+
+const API_URL = "";
+
+async function loadData() {
+
+    try {
+
+        const healthResponse =
+            await fetch(`${API_URL}/api/health`);
+
+        const healthData =
+            await healthResponse.json();
+
+        document.getElementById("status").textContent =
+            healthData.status;
+
+        const revenueResponse =
+            await fetch(`${API_URL}/api/revenue`);
+
+        const revenueData =
+            await revenueResponse.json();
+
+        document.getElementById("revenue").textContent =
+            `₹${revenueData.total_revenue}`;
+
+        const productsResponse =
+            await fetch(`${API_URL}/api/products`);
+
+        const products =
+            await productsResponse.json();
+
+        const productsContainer =
+            document.getElementById("products");
+
+        productsContainer.innerHTML = "";
+
+        products.forEach(product => {
+
+            const div = document.createElement("div");
+
+            div.className = "product";
+
+            div.innerHTML = `
+                <strong>${product.name}</strong>
+                <br>
+                ₹${product.price}
+            `;
+
+            productsContainer.appendChild(div);
+
+        });
+
+    } catch (error) {
+
+        document.getElementById("status").textContent =
+            "Backend unavailable";
+
+        console.error(error);
+    }
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
