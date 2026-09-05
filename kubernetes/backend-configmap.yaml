@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecommerce-backend-config
+data:
+  APP_NAME: ecommerce-analytics
+  ENVIRONMENT: local-kubernetes

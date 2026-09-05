@@ -1,0 +1,23 @@
+---
+- name: Configure local DevOps environment
+  hosts: local
+  become: false
+
+  tasks:
+    - name: Verify Ansible connectivity
+      ansible.builtin.ping:
+
+    - name: Create application configuration directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/devops-ecommerce-config"
+        state: directory
+        mode: "0755"
+
+    - name: Create application configuration file
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/devops-ecommerce-config/app.conf"
+        content: |
+          APP_NAME=ecommerce-analytics
+          ENVIRONMENT=local
+          MANAGED_BY=ansible
+        mode: "0644"
