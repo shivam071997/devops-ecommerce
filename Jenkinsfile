@@ -55,9 +55,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                    kubectl --kubeconfig=/home/shivam/.kube/config set image deployment/ecommerce-backend                       ecommerce-backend=${BACKEND_IMAGE}:${BUILD_NUMBER}
+                    kubectl --kubeconfig=/home/shivam/.kube/config set image deployment/ecommerce-backend                       backend=${BACKEND_IMAGE}:${BUILD_NUMBER}
 
-                    kubectl --kubeconfig=/home/shivam/.kube/config set image deployment/ecommerce-frontend                       ecommerce-frontend=${FRONTEND_IMAGE}:${BUILD_NUMBER}
+                    kubectl --kubeconfig=/home/shivam/.kube/config set image deployment/ecommerce-frontend                       frontend=${FRONTEND_IMAGE}:${BUILD_NUMBER}
 
                     kubectl --kubeconfig=/home/shivam/.kube/config rollout status deployment/ecommerce-backend
                     kubectl --kubeconfig=/home/shivam/.kube/config rollout status deployment/ecommerce-frontend
