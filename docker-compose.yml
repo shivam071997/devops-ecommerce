@@ -1,0 +1,51 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: ecommerce
+      POSTGRES_PASSWORD: ecommercepass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecommerce -d ecommerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ecommerce-backend:2.0
+    container_name: ecommerce-backend
+    environment:
+      DB_HOST: postgres
+      DB_NAME: ecommerce
+      DB_USER: ecommerce
+      DB_PASSWORD: ecommercepass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    networks:
+      - ecommerce-network
+
+  frontend:
+    image: ecommerce-frontend:1.1
+    container_name: ecommerce-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    external: true
+
+volumes:
+  postgres-data:
